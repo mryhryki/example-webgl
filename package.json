@@ -1,0 +1,12 @@
+{
+  "name": "example-webgl",
+  "private": true,
+  "author": "mryhryki",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd ./static/ && http-server -o ./"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
