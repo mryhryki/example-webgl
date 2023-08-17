@@ -2,8 +2,12 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import * as THREE from "three";
 
-const width = 1280;
-const height = 800;
+const ViewAreaWidth = 800;
+const ViewAreaHeight = 800;
+
+const ImageURL = "/images/46081x6624.png";
+const ImageWidth = 46081;
+const ImageHeight = 6624;
 
 function App() {
   const [canvasRef, setCanvasRef] = useState<HTMLCanvasElement | null>(null);
@@ -11,41 +15,32 @@ function App() {
   useEffect(() => {
     if (canvasRef == null) return;
 
-    const camera = new THREE.PerspectiveCamera(90, width / height, 0.01, 10);
-    camera.position.z = 1;
+    (async () => {
+      const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
+      renderer.setSize(ViewAreaWidth, ViewAreaHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
 
-    const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, ViewAreaWidth / ViewAreaHeight, 1, ImageWidth / 2);
+      camera.position.set(0, 0, Math.max(ImageHeight, ImageWidth) / 2);
 
-    const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    // const geometry = new THREE.PlaneGeometry(width, height);
-    // const material = new THREE.MeshNormalMaterial();
-    const material = new THREE.MeshBasicMaterial({
-      map: new THREE.TextureLoader().load("/images/854x1280.jpg"),
-    });
+      const scene = new THREE.Scene();
 
-    const mesh = new THREE.Mesh(geometry, material);
-    scene.add(mesh);
+      const geometry = new THREE.PlaneGeometry(ImageWidth / 2, ImageHeight / 2);
+      const map = await (new THREE.TextureLoader().loadAsync(ImageURL));
+      const material = new THREE.MeshBasicMaterial({ map });
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvasRef });
-    renderer.setSize(width, height);
+      const mesh = new THREE.Mesh(geometry, material);
+      scene.add(mesh);
 
-    function animation(time: number) {
-      mesh.rotation.x = time / 4000;
-      mesh.rotation.y = time / 4000;
       renderer.render(scene, camera);
-    }
-
-    renderer.setAnimationLoop(animation);
-  }, [
-    canvasRef,
-  ]);
+    })();
+  }, [canvasRef]);
 
   return (
     <>
       <h1>Example WebGL</h1>
-      <canvas ref={setCanvasRef} style={{ width, height }}/>
+      <canvas ref={setCanvasRef} style={{ width: ViewAreaWidth, height: ViewAreaHeight }}/>
     </>
-
   );
 }
 
