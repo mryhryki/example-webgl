@@ -6,7 +6,10 @@ This is example/practice repository of WebGL
 
 ```shell
 $ npm install
-$ npm start
+
+$ npm run dev
+# or
+$ npm run build && npm run preview
 ```
 
 ## Memo
